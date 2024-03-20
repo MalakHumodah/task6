@@ -1,4 +1,3 @@
-import '../../data/models/product_model.dart';
 import 'home_state.dart';
 
 abstract class HomeEvent {}
@@ -11,8 +10,3 @@ class ChangeWidgetsView extends HomeEvent {
   ChangeWidgetsView({required this.options});
 }
 
-class AddToCart extends HomeEvent {
-  final ProductModel product;
-
-  AddToCart({required this.product});
-}

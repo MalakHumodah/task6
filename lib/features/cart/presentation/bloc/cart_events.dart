@@ -9,3 +9,9 @@ class RemoveProduct extends CartEvent {
 
   RemoveProduct({required this.productModel});
 }
+
+class AddProduct extends CartEvent {
+  final ProductModel productModel;
+
+  AddProduct({required this.productModel});
+}

@@ -12,15 +12,16 @@ class ShowProducts extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var bloc = context.read<HomeBloc>().state;
-    return ListView.builder(
-      itemBuilder: (context, index) {
-        return bloc.showProductsOptions == ShowProductsOptions.cards
-            ? CardView(productModel: bloc.products[index])
-            : MenuView(productModel: bloc.products[index]);
-      },
-      shrinkWrap: true,
-      itemCount: bloc.products.length,
-    );
+    return BlocBuilder<HomeBloc, HomeState>(builder: (context, state) {
+      return ListView.builder(
+        itemBuilder: (context, index) {
+          return state.showProductsOptions == ShowProductsOptions.cards
+              ? CardView(productModel: state.products[index])
+              : MenuView(productModel: state.products[index]);
+        },
+        shrinkWrap: true,
+        itemCount: state.products.length,
+      );
+    });
   }
 }

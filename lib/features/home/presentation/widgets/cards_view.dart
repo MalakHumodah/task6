@@ -2,10 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:task6/core/shared/widgets/custom_icon_button.dart';
 import 'package:task6/core/shared/widgets/custom_text_style.dart';
-
+import 'package:task6/features/cart/presentation/bloc/cart_bloc.dart';
+import 'package:task6/features/cart/presentation/bloc/cart_events.dart';
+import '../../../../core/shared/widgets/cached_image.dart';
+import '../../../cart/presentation/bloc/cart_state.dart';
 import '../../data/models/product_model.dart';
-import '../bloc/home_bloc.dart';
-import '../bloc/home_event.dart';
 
 class CardView extends StatelessWidget {
   final ProductModel productModel;
@@ -24,18 +25,13 @@ class CardView extends StatelessWidget {
           padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 10),
           child: Column(
             children: [
-              SizedBox(
+              CachedImage(
                 height: 100,
                 width: double.maxFinite,
-                child: Image.network(
-                  productModel.image ?? '',
-                  fit: BoxFit.cover,
-                ),
-              ),
-              SizedBox(
-                height: 12,
+                imageUrl: productModel.image ?? '',
               ),
               Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
                     productModel.name ?? '',
@@ -43,21 +39,42 @@ class CardView extends StatelessWidget {
                       size: 20,
                       color: Theme.of(context).primaryColorDark,
                     ),
-                    textAlign: TextAlign.start,
                   ),
-                  SizedBox(
-                    width: 150,
-                  ),
-                  CustomIconButton(
-                    icon: Icon(Icons.add_shopping_cart),
-                    onPressed: () {
-                      context
-                          .read<HomeBloc>()
-                          .add(AddToCart(product: productModel));
+                  BlocBuilder<CartBloc, CartState>(
+                    builder: (context, state) {
+                      bool itemIsAdded = false;
+                      try {
+                        state.cartProducts
+                            .firstWhere((element) => element == productModel);
+                        itemIsAdded = true;
+                      } catch (e) {
+                        itemIsAdded = false;
+                      }
+                      if (itemIsAdded) {
+                        return CustomIconButton(
+                            icon: Icon(
+                              Icons.remove_shopping_cart_outlined,
+                              color: Colors.red,
+                            ),
+                            onPressed: () {
+                              productModel.isAdded = false;
+                              context.read<CartBloc>().add(
+                                  RemoveProduct(productModel: productModel));
+                            });
+                      } else {
+                        return CustomIconButton(
+                            icon: Icon(Icons.add_shopping_cart),
+                            onPressed: () {
+                              productModel.isAdded = false;
+                              context
+                                  .read<CartBloc>()
+                                  .add(AddProduct(productModel: productModel));
+                            });
+                      }
                     },
                   ),
                 ],
-              )
+              ),
             ],
           ),
         ),
